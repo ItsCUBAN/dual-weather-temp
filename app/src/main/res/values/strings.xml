@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dual Weather Temp</string>
+    <string name="widget_description">Current temperature in °F and °C</string>
+    <string name="widget_large_description">Temperature and upcoming hours in °F and °C</string>
+
+    <!-- Header -->
+    <string name="your_location">Your location</string>
+    <string name="loading">Loading weather…</string>
+    <string name="no_data_yet">No data yet. Pull down to refresh.</string>
+    <string name="dual_temp">%1$s°F / %2$s°C</string>
+    <string name="high_low">High %1$s · Low %2$s</string>
+    <string name="high_only">High %1$s</string>
+    <string name="low_only">Low %1$s</string>
+    <string name="feels_like">Feels like %1$s</string>
+    <string name="temp_f">%1$s°F</string>
+    <string name="temp_c">%1$s°C</string>
+    <string name="temp_placeholder_f">--°F</string>
+    <string name="temp_placeholder_c">--°C</string>
+
+    <!-- Conditions -->
+    <string name="condition_clear_day">Sunny</string>
+    <string name="condition_clear_night">Clear</string>
+    <string name="condition_partly_cloudy">Partly cloudy</string>
+    <string name="condition_cloudy">Cloudy</string>
+    <string name="condition_rain">Rain</string>
+    <string name="condition_storm">Thunderstorms</string>
+    <string name="condition_snow">Snow</string>
+    <string name="condition_fog">Fog</string>
+
+    <!-- Forecasts -->
+    <string name="hourly_title">Hourly forecast</string>
+    <string name="hourly_now">Now</string>
+    <string name="degrees">%1$s°</string>
+    <string name="percent">%1$d%%</string>
+    <string name="daily_title">7-day forecast</string>
+    <string name="today">Today</string>
+    <string name="daily_range">%1$s° / %2$s°F · %3$s° / %4$s°C</string>
+    <string name="unknown_value">--</string>
+
+    <!-- Alerts -->
+    <string name="alert_source">National Weather Service</string>
+    <string name="alert_source_until">National Weather Service · until %1$s</string>
+
+    <!-- Details -->
+    <string name="uv_title">UV index</string>
+    <string name="uv_max_today">Today\'s max %1$s</string>
+    <string name="uv_low">Low</string>
+    <string name="uv_moderate">Moderate</string>
+    <string name="uv_high">High</string>
+    <string name="uv_very_high">Very high</string>
+    <string name="uv_extreme">Extreme</string>
+    <string name="aqi_title">Air quality</string>
+    <string name="aqi_good">Good</string>
+    <string name="aqi_moderate">Moderate</string>
+    <string name="aqi_sensitive">Unhealthy for sensitive groups</string>
+    <string name="aqi_unhealthy">Unhealthy</string>
+    <string name="aqi_very_unhealthy">Very unhealthy</string>
+    <string name="aqi_hazardous">Hazardous</string>
+    <string name="humidity_title">Humidity</string>
+    <string name="dewpoint">Dew point %1$s</string>
+    <string name="wind_title">Wind</string>
+    <string name="wind_mph">%1$s mph</string>
+    <string name="wind_detail">%1$s km/h · from the %2$s</string>
+    <string name="wind_kmh">%1$s km/h</string>
+    <string name="wind_calm">Calm</string>
+    <string-array name="compass_directions">
+        <item>north</item>
+        <item>northeast</item>
+        <item>east</item>
+        <item>southeast</item>
+        <item>south</item>
+        <item>southwest</item>
+        <item>west</item>
+        <item>northwest</item>
+    </string-array>
+    <string name="pressure_title">Pressure</string>
+    <string name="pressure_inhg">%1$s inHg</string>
+    <string name="pressure_hpa">%1$s hPa</string>
+    <string name="visibility_title">Visibility</string>
+    <string name="visibility_miles">%1$s mi</string>
+    <string name="visibility_km">%1$s km</string>
+    <string name="sun_title">Sunrise / sunset</string>
+    <string name="sunrise_at">Sunrise %1$s</string>
+    <string name="sunset_at">Sunset %1$s</string>
+    <string name="moon_title">Moon phase</string>
+    <string name="moon_new">New moon</string>
+    <string name="moon_waxing_crescent">Waxing crescent</string>
+    <string name="moon_first_quarter">First quarter</string>
+    <string name="moon_waxing_gibbous">Waxing gibbous</string>
+    <string name="moon_full">Full moon</string>
+    <string name="moon_waning_gibbous">Waning gibbous</string>
+    <string name="moon_last_quarter">Last quarter</string>
+    <string name="moon_waning_crescent">Waning crescent</string>
+    <string name="full_moon_today">Full moon today</string>
+    <plurals name="full_moon_in">
+        <item quantity="one">Full moon in %d day</item>
+        <item quantity="other">Full moon in %d days</item>
+    </plurals>
+
+    <!-- Footer -->
+    <string name="footer_station">Updated %1$s · Station %2$s</string>
+    <string name="footer_forecast">Updated %1$s · Hourly forecast</string>
+
+    <!-- Permission -->
+    <string name="permission_title">We need your location</string>
+    <string name="permission_body">Dual Weather Temp uses your location to show the temperature where you are. It works in the United States only.</string>
+    <string name="permission_button">Allow location</string>
+    <string name="permission_denied">Without location access we can\'t get the temperature for your area.</string>
+    <string name="open_settings">Open settings</string>
+
+    <!-- Errors -->
+    <string name="error_no_location">Couldn\'t get your location. Make sure location is turned on.</string>
+    <string name="error_outside_us">The US National Weather Service has no data for this location.</string>
+    <string name="error_network">Can\'t reach the weather service. Try again.</string>
+    <string name="error_no_data">The weather service returned no data for your area.</string>
+
+    <!-- Widgets -->
+    <string name="widget_open_app">Tap to open the app</string>
+    <string name="widget_updated_at">%1$s · Updated %2$s</string>
+    <string name="widget_high">High %1$s° / %2$s°</string>
+    <string name="widget_low">Low %1$s° / %2$s°</string>
+    <string name="widget_hour">%1$s\n%2$s\n%3$s°/%4$s°</string>
+</resources>
