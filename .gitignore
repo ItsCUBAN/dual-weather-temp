@@ -16,3 +16,6 @@ captures/
 # Signing keys (never commit)
 *.jks
 *.keystore
+
+# Release signing passwords
+keystore.properties
