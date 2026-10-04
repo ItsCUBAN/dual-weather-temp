@@ -10,8 +10,10 @@ import androidx.compose.material.icons.outlined.Thunderstorm
 import androidx.compose.material.icons.outlined.Umbrella
 import androidx.compose.material.icons.outlined.WbCloudy
 import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material.icons.outlined.WbTwilight
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.dualweathertemp.app.data.Condition
+import com.dualweathertemp.app.sky.DayPhase
 
 fun Condition.icon(isDay: Boolean): ImageVector = when (this) {
     Condition.CLEAR -> if (isDay) Icons.Outlined.WbSunny else Icons.Outlined.DarkMode
@@ -21,4 +23,10 @@ fun Condition.icon(isDay: Boolean): ImageVector = when (this) {
     Condition.STORM -> Icons.Outlined.Thunderstorm
     Condition.SNOW -> Icons.Outlined.AcUnit
     Condition.FOG -> Icons.Outlined.Dehaze
+}
+
+/** Shows a sunset for clear skies at twilight instead of a midday sun. */
+fun Condition.icon(phase: DayPhase): ImageVector {
+    val clearish = this == Condition.CLEAR || this == Condition.PARTLY_CLOUDY
+    return if (clearish && phase == DayPhase.TWILIGHT) Icons.Outlined.WbTwilight else icon(phase == DayPhase.DAY)
 }

@@ -6,6 +6,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.json.JSONException
 import java.io.IOException
+import java.net.URLEncoder
 import java.time.Duration
 import java.time.Instant
 import java.util.Locale
@@ -21,56 +22,73 @@ class WeatherRepository(
      *
      * @throws WeatherException with the reason the temperature couldn't be loaded.
      */
-    suspend fun fetch(latitude: Double, longitude: Double): WeatherReport {
-        try {
-            return coroutineScope {
-                val point = loadPoint(latitude, longitude)
-                val instant = now()
+    suspend fun fetch(latitude: Double, longitude: Double): WeatherReport = mapErrors {
+        coroutineScope {
+            val point = loadPoint(latitude, longitude)
+            val instant = now()
 
-                val observation = async { attempt { latestObservation(point.observationStationsUrl, instant) } }
-                val hourlyBody = async { attempt { api.get(point.forecastHourlyUrl) } }
-                val daily = async { attempt { WeatherParser.parseDaily(api.get(point.forecastUrl)) } }
-                val alerts = async { attempt { WeatherParser.parseAlerts(api.get(alertsUrl(latitude, longitude))) } }
-                val uv = async { attempt { WeatherParser.parseUv(api.get(uvUrl(latitude, longitude))) } }
-                val aqi = async { attempt { WeatherParser.parseUsAqi(api.get(airQualityUrl(latitude, longitude))) } }
+            val observation = async { attempt { latestObservation(point.observationStationsUrl, instant) } }
+            val hourlyBody = async { attempt { api.get(point.forecastHourlyUrl) } }
+            val daily = async { attempt { WeatherParser.parseDaily(api.get(point.forecastUrl)) } }
+            val alerts = async { attempt { WeatherParser.parseAlerts(api.get(alertsUrl(latitude, longitude))) } }
+            val uv = async { attempt { WeatherParser.parseUv(api.get(uvUrl(latitude, longitude))) } }
+            val aqi = async { attempt { WeatherParser.parseUsAqi(api.get(airQualityUrl(latitude, longitude))) } }
 
-                val observed = observation.await().getOrNull()
-                val current = observed
-                    // No usable station reading: fall back to the hourly forecast, surfacing its error.
-                    ?: WeatherParser.parseHourlyCurrent(hourlyBody.await().getOrThrow(), instant)
-                    ?: throw WeatherException(Reason.NO_DATA)
+            val observed = observation.await().getOrNull()
+            val current = observed
+                // No usable station reading: fall back to the hourly forecast, surfacing its error.
+                ?: WeatherParser.parseHourlyCurrent(hourlyBody.await().getOrThrow(), instant)
+                ?: throw WeatherException(Reason.NO_DATA)
 
-                val hourly = hourlyBody.await().getOrNull()
-                    ?.let { body -> attempt { WeatherParser.parseHourly(body, instant) }.getOrNull() }
-                    .orEmpty()
-                val uvInfo = uv.await().getOrNull()
+            val hourly = hourlyBody.await().getOrNull()
+                ?.let { body -> attempt { WeatherParser.parseHourly(body, instant) }.getOrNull() }
+                .orEmpty()
+            val uvInfo = uv.await().getOrNull()
 
-                WeatherReport(
-                    locationName = point.locationName,
-                    latitude = latitude,
-                    longitude = longitude,
-                    timeZone = point.timeZone,
-                    current = current,
-                    source = if (observed != null) WeatherReport.Source.OBSERVATION else WeatherReport.Source.FORECAST,
-                    hourly = hourly,
-                    daily = daily.await().getOrNull().orEmpty(),
-                    alerts = alerts.await().getOrNull().orEmpty(),
-                    uvIndex = uvInfo?.current,
-                    uvIndexMax = uvInfo?.todayMax,
-                    usAqi = aqi.await().getOrNull(),
-                    timestampMillis = instant.toEpochMilli(),
-                )
-            }
-        } catch (e: WeatherException) {
-            throw e
-        } catch (e: HttpStatusException) {
-            // weather.gov returns 5xx fairly often; those are worth retrying.
-            throw WeatherException(if (e.code >= 500) Reason.NETWORK else Reason.NO_DATA, e)
-        } catch (e: IOException) {
-            throw WeatherException(Reason.NETWORK, e)
-        } catch (e: JSONException) {
-            throw WeatherException(Reason.NO_DATA, e)
+            WeatherReport(
+                locationName = point.locationName,
+                latitude = latitude,
+                longitude = longitude,
+                timeZone = point.timeZone,
+                current = current,
+                source = if (observed != null) WeatherReport.Source.OBSERVATION else WeatherReport.Source.FORECAST,
+                hourly = hourly,
+                daily = daily.await().getOrNull().orEmpty(),
+                alerts = alerts.await().getOrNull().orEmpty(),
+                uvIndex = uvInfo?.current,
+                uvIndexMax = uvInfo?.todayMax,
+                usAqi = aqi.await().getOrNull(),
+                timestampMillis = instant.toEpochMilli(),
+            )
         }
+    }
+
+    /** Only the active alerts: one small request, cheap enough for frequent background checks. */
+    suspend fun fetchAlerts(latitude: Double, longitude: Double): List<WeatherAlert> = mapErrors {
+        WeatherParser.parseAlerts(api.get(alertsUrl(latitude, longitude)))
+    }
+
+    /** US cities matching [query] (at least [Places.MIN_SEARCH_LENGTH] letters), best matches first. */
+    suspend fun searchPlaces(query: String): List<SavedPlace> = mapErrors {
+        val trimmed = query.trim()
+        if (trimmed.length < Places.MIN_SEARCH_LENGTH) return@mapErrors emptyList()
+        val url = "https://geocoding-api.open-meteo.com/v1/search?name=" +
+            URLEncoder.encode(trimmed, "UTF-8") + "&count=10&language=en&format=json&countryCode=US"
+        WeatherParser.parsePlaces(api.get(url))
+    }
+
+    /** @throws WeatherException with the reason the request failed. */
+    private suspend fun <T> mapErrors(block: suspend () -> T): T = try {
+        block()
+    } catch (e: WeatherException) {
+        throw e
+    } catch (e: HttpStatusException) {
+        // weather.gov returns 5xx fairly often; those are worth retrying.
+        throw WeatherException(if (e.code >= 500) Reason.NETWORK else Reason.NO_DATA, e)
+    } catch (e: IOException) {
+        throw WeatherException(Reason.NETWORK, e)
+    } catch (e: JSONException) {
+        throw WeatherException(Reason.NO_DATA, e)
     }
 
     private suspend fun loadPoint(latitude: Double, longitude: Double): PointInfo {

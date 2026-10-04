@@ -32,7 +32,7 @@ fun AlertCard(alert: WeatherAlert, zone: ZoneId, modifier: Modifier = Modifier) 
         WeatherText.AlertLevel.ADVISORY -> Color(0xB3B26A00)
     }
     val source = alert.endsMillis
-        ?.let { stringResource(R.string.alert_source_until, WeatherText.formatTime(context, it, zone)) }
+        ?.let { stringResource(R.string.alert_source_until, WeatherText.formatUntil(context, it, zone)) }
         ?: stringResource(R.string.alert_source)
 
     GlassCard(modifier = modifier, tint = tint) {

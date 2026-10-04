@@ -188,6 +188,30 @@ class WeatherParserTest {
     }
 
     @Test
+    fun parseAlerts_keyIgnoresUpdatesAndCancelsAreDropped() {
+        val body = """
+            {"features": [
+              {"properties": {"id": "v2-1", "messageType": "Alert", "event": "Tornado Warning",
+                "onset": "2026-10-03T18:40:00-04:00", "ends": "2026-10-03T19:15:00-04:00"}},
+              {"properties": {"id": "v2-2", "messageType": "Update", "event": "Tornado Warning",
+                "onset": "2026-10-03T18:40:00-04:00", "ends": "2026-10-03T19:30:00-04:00"}},
+              {"properties": {"id": "v2-3", "messageType": "Update", "event": "Severe Thunderstorm Watch",
+                "onset": "2026-10-03T15:00:00-04:00", "ends": "2026-10-03T22:00:00-04:00"}},
+              {"properties": {"id": "v2-4", "messageType": "Cancel", "event": "Flood Warning",
+                "onset": "2026-10-03T12:00:00-04:00"}}
+            ]}
+        """.trimIndent()
+
+        val alerts = WeatherParser.parseAlerts(body)
+
+        assertEquals(listOf("Tornado Warning", "Severe Thunderstorm Watch"), alerts.map { it.event })
+        assertEquals(
+            "Tornado Warning|" + Instant.parse("2026-10-03T22:40:00Z").toEpochMilli(),
+            alerts[0].key,
+        )
+    }
+
+    @Test
     fun parseAlerts_noAlerts() {
         assertTrue(WeatherParser.parseAlerts("""{"features": []}""").isEmpty())
     }

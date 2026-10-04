@@ -35,6 +35,7 @@ import com.dualweathertemp.app.R
 import com.dualweathertemp.app.astro.MoonCalculator
 import com.dualweathertemp.app.data.WeatherReport
 import com.dualweathertemp.app.sky.sunTimes
+import com.dualweathertemp.app.ui.LocalUnitOrder
 import com.dualweathertemp.app.ui.WeatherText
 import com.dualweathertemp.app.util.TemperatureUtils
 import com.dualweathertemp.app.util.Units
@@ -97,7 +98,7 @@ private fun buildDetails(report: WeatherReport, nowMillis: Long): List<Detail> {
             title = stringResource(R.string.humidity_title),
             value = stringResource(R.string.percent, humidity.roundToInt()),
             detail = current.dewpointCelsius?.let {
-                stringResource(R.string.dewpoint, WeatherText.dualTemp(context, it))
+                stringResource(R.string.dewpoint, WeatherText.dualTemp(it, LocalUnitOrder.current))
             },
         )
     }

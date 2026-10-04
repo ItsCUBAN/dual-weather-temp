@@ -2,6 +2,7 @@ package com.dualweathertemp.app.sky
 
 import com.dualweathertemp.app.astro.SunCalculator
 import com.dualweathertemp.app.astro.SunTimes
+import com.dualweathertemp.app.data.BackgroundStyle
 import com.dualweathertemp.app.data.Condition
 import com.dualweathertemp.app.data.WeatherReport
 import java.time.Instant
@@ -38,9 +39,23 @@ enum class SkyTheme(val topColor: Long, val bottomColor: Long) {
     SNOW(0xFF6B8BA4, 0xFFA9BCCD),
     FOG(0xFF6B7489, 0xFFA0A7B6),
     TWILIGHT(0xFF5B3A8C, 0xFFF2994A),
-    CLEAR_NIGHT(0xFF0B1A3A, 0xFF24365E);
+    CLEAR_NIGHT(0xFF0B1A3A, 0xFF24365E),
+
+    /** Fixed backgrounds chosen in Settings instead of the sky. */
+    LIGHT(0xFFEAF2FB, 0xFFC9DCF1),
+    DARK(0xFF101418, 0xFF1F2630);
+
+    /** Light backgrounds need dark text and status bar icons. */
+    val isLight: Boolean get() = this == LIGHT
 
     companion object {
+
+        /** The background for [style]; the sky follows [report]'s weather and time of day. */
+        fun resolve(style: BackgroundStyle, report: WeatherReport?, nowMillis: Long): SkyTheme = when (style) {
+            BackgroundStyle.SKY -> report?.skyTheme(nowMillis) ?: CLEAR_DAY
+            BackgroundStyle.LIGHT -> LIGHT
+            BackgroundStyle.DARK -> DARK
+        }
 
         fun from(condition: Condition, phase: DayPhase): SkyTheme = when (condition) {
             Condition.RAIN -> RAIN

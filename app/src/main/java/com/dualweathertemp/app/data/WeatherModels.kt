@@ -45,6 +45,11 @@ data class WeatherAlert(
     /** NWS event name, e.g. "Heat Advisory". */
     val event: String,
     val endsMillis: Long? = null,
+    /**
+     * Stays the same when NWS updates or extends an alert ("event|onset"), unlike the alert id,
+     * so one alert produces one notification.
+     */
+    val key: String = "",
 )
 
 @Serializable

@@ -3,14 +3,27 @@ package com.dualweathertemp.app.widget
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
+import android.content.Intent
 
-/** Small widget (2×1): current temperature in °F and °C. Tapping it opens the app. */
+/** Small widget (2×1): current temperature in both units. Tapping it opens the app. */
 class DualTempWidgetProvider : AppWidgetProvider() {
+
+    override fun onReceive(context: Context, intent: Intent) {
+        // The ↻ button of both widget sizes points here.
+        if (intent.action == WidgetRenderer.ACTION_REFRESH) {
+            WidgetRenderer.showUpdating(context)
+            WeatherUpdateWorker.refreshNow(context)
+            return
+        }
+        super.onReceive(context, intent)
+    }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) =
         onWidgetsUpdated(context)
 
     override fun onEnabled(context: Context) = WeatherUpdateWorker.schedulePeriodic(context)
+
+    override fun onDeleted(context: Context, appWidgetIds: IntArray) = WidgetPlaces(context).remove(appWidgetIds)
 
     override fun onDisabled(context: Context) = onWidgetTypeRemoved(context)
 }
@@ -22,6 +35,8 @@ class DualTempLargeWidgetProvider : AppWidgetProvider() {
         onWidgetsUpdated(context)
 
     override fun onEnabled(context: Context) = WeatherUpdateWorker.schedulePeriodic(context)
+
+    override fun onDeleted(context: Context, appWidgetIds: IntArray) = WidgetPlaces(context).remove(appWidgetIds)
 
     override fun onDisabled(context: Context) = onWidgetTypeRemoved(context)
 }

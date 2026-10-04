@@ -149,15 +149,23 @@ object WeatherParser {
         return days.values.take(MAX_DAYS)
     }
 
-    /** Active alerts from `/alerts/active?point=...`. */
+    /** Active alerts from `/alerts/active?point=...`, without cancellations. */
     fun parseAlerts(body: String): List<WeatherAlert> {
         val features = JSONObject(body).optJSONArray("features") ?: return emptyList()
         return (0 until features.length()).mapNotNull { index ->
             val properties = features.optJSONObject(index)?.optJSONObject("properties") ?: return@mapNotNull null
+            if (properties.optString("messageType") == "Cancel") return@mapNotNull null
             val event = properties.optNullableString("event") ?: return@mapNotNull null
             val ends = parseInstant(properties.optNullableString("ends") ?: properties.optString("expires"))
-            WeatherAlert(event = event, endsMillis = ends?.toEpochMilli())
-        }.distinctBy { it.event }
+            val start = properties.optNullableString("onset")
+                ?: properties.optNullableString("effective")
+                ?: properties.optString("sent")
+            WeatherAlert(
+                event = event,
+                endsMillis = ends?.toEpochMilli(),
+                key = "$event|${parseInstant(start)?.toEpochMilli() ?: start}",
+            )
+        }.distinctBy { it.key }
     }
 
     /** UV index from Open-Meteo `/v1/forecast?current=uv_index&daily=uv_index_max`. */
@@ -168,6 +176,22 @@ object WeatherParser {
             if (array.length() == 0 || array.isNull(0)) null else array.optDouble(0).takeUnless { it.isNaN() }
         }
         return UvInfo(current, max)
+    }
+
+    /** US cities from Open-Meteo geocoding `/v1/search`; places without a state are skipped. */
+    fun parsePlaces(body: String): List<SavedPlace> {
+        val results = JSONObject(body).optJSONArray("results") ?: return emptyList()
+        return (0 until results.length()).mapNotNull { index ->
+            val result = results.optJSONObject(index) ?: return@mapNotNull null
+            if (result.optString("country_code") != "US") return@mapNotNull null
+            SavedPlace(
+                id = result.optNullableString("id") ?: return@mapNotNull null,
+                name = result.optNullableString("name") ?: return@mapNotNull null,
+                state = result.optNullableString("admin1") ?: return@mapNotNull null,
+                latitude = result.optFiniteDouble("latitude") ?: return@mapNotNull null,
+                longitude = result.optFiniteDouble("longitude") ?: return@mapNotNull null,
+            )
+        }.distinctBy { it.longLabel }
     }
 
     /** US AQI from Open-Meteo `/v1/air-quality?current=us_aqi`. */

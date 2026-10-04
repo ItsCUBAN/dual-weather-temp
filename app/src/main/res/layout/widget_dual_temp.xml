@@ -1,61 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_bg_clear_day"
-    android:gravity="center_vertical"
-    android:orientation="vertical"
-    android:paddingHorizontal="14dp"
-    android:paddingVertical="8dp">
+    android:background="@drawable/widget_bg_clear_day">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:paddingVertical="6dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/widget_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="4dp"
+                android:textSize="18sp" />
+
+            <!-- Shrinks to fit: launchers give a 2×1 widget very different widths. -->
+            <TextView
+                android:id="@+id/widget_temps"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:autoSizeMaxTextSize="22sp"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeStepGranularity="1sp"
+                android:autoSizeTextType="uniform"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:text="@string/temp_placeholder_both"
+                android:textColor="@color/widget_text"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/widget_icon"
+            android:id="@+id/widget_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingEnd="6dp"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/widget_temp_f"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/temp_placeholder_f"
-            android:textColor="@color/widget_text"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="6dp"
-            android:text="|"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/widget_open_app"
             android:textColor="@color/widget_text_secondary"
-            android:textSize="20sp" />
+            android:textSize="11sp" />
 
+        <!-- Replaces the location line while an important alert is active. -->
         <TextView
-            android:id="@+id/widget_temp_c"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/temp_placeholder_c"
-            android:textColor="@color/widget_text"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:id="@+id/widget_alert"
+            style="@style/WidgetAlert"
+            android:visibility="gone" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/widget_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="@string/widget_open_app"
-        android:textColor="@color/widget_text_secondary"
-        android:textSize="11sp" />
-</LinearLayout>
+    <ImageView
+        android:id="@+id/widget_refresh"
+        android:contentDescription="@string/widget_refresh"
+        style="@style/WidgetRefresh" />
+</FrameLayout>

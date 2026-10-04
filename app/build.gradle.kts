@@ -21,8 +21,8 @@ android {
         applicationId = "com.dualweathertemp.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
     }
 
     signingConfigs {
@@ -50,6 +50,8 @@ android {
 
     buildFeatures {
         compose = true
+        // Version shown in Settings.
+        buildConfig = true
     }
 }
 

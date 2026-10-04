@@ -10,4 +10,6 @@
     android:targetCellHeight="2"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="0"
-    android:widgetCategory="home_screen" />
+    android:widgetCategory="home_screen"
+    android:configure="com.dualweathertemp.app.widget.WidgetConfigActivity"
+    android:widgetFeatures="reconfigurable|configuration_optional" />
